@@ -1,9 +1,30 @@
 import 'package:flutter/material.dart';
 
+import 'homepage.dart';
+
 void main() {
   runApp(const MyApp());
 }
 
+final ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark, // Essential for dark mode
+  scaffoldBackgroundColor: Colors.black, // True black background
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.black, // Black app bar
+    foregroundColor: Colors.white, // White text/icons on app bar
+  ),
+  colorScheme: ColorScheme.dark(
+    primary: Colors.tealAccent, // Example primary color for dark theme
+    secondary: Colors.grey[800]!, // Example secondary color
+    surface: Colors.black, // Card/dialog backgrounds
+    background: Colors.black, // General background
+  ),
+  // Customize other elements like text themes, button themes, etc.
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(color: Colors.white),
+    bodyMedium: TextStyle(color: Colors.white70),
+  ),
+);
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -13,25 +34,29 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: darkTheme, // Your light theme
+      // darkTheme: darkTheme, // Your defined dark theme
+      // themeMode: ThemeMode.system,
+      // themeMode: ThemeMode.system,
+      // theme: ThemeData(
+      //   // This is the theme of your application.
+      //   //
+      //   // TRY THIS: Try running your application with "flutter run". You'll see
+      //   // the application has a purple toolbar. Then, without quitting the app,
+      //   // try changing the seedColor in the colorScheme below to Colors.green
+      //   // and then invoke "hot reload" (save your changes or press the "hot
+      //   // reload" button in a Flutter-supported IDE, or press "r" if you used
+      //   // the command line to start the app).
+      //   //
+      //   // Notice that the counter didn't reset back to zero; the application
+      //   // state is not lost during the reload. To reset the state, use hot
+      //   // restart instead.
+      //   //
+      //   // This works for code too, not just values: Most code changes can be
+      //   // tested with just a hot reload.
+      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      // ),
+      home: const HomeScreen(),
     );
   }
 }
