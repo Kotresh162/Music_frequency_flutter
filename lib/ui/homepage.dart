@@ -1,11 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:fl_chart/fl_chart.dart';
-
 import '../../domain/entities/decode_message.dart';
 import '../controllers/audio_decode_controller.dart';
+import '../secrete.dart';
+import 'graph.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,14 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String message = "";
   List<double> _frequencies = [];
 
-  final decodeUsecase = DecodeAudioMessageImpl({
-    440: "A", 350: "B", 260: "C", 474: "D", 492: "E",
-    401: "F", 584: "G", 553: "H", 582: "I", 525: "J",
-    501: "K", 532: "L", 594: "M", 599: "N", 528: "O",
-    539: "P", 675: "Q", 683: "R", 698: "S", 631: "T",
-    628: "U", 611: "V", 622: "W", 677: "X", 688: "Y",
-    693: "Z", 418: " "
-  });
+  final decodeUsecase = DecodeAudioMessageImpl(freqToChar);
 
   @override
   void initState() {
@@ -41,8 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (result != null && result.files.single.path != null) {
       filePath = result.files.single.path!;
-
-      // ✅ Correct way: use setAudioSource with FileAudioSource
       await _player.setAudioSource(
         AudioSource.file(filePath!),
       );
@@ -61,41 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget _buildGraph() {
-    if (_frequencies.isEmpty) {
-      return const Text("No frequency data yet.");
-    }
-
-    return SizedBox(
-      height: 200,
-      child: LineChart(
-        LineChartData(
-          titlesData: FlTitlesData(
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: true, reservedSize: 40),
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-          ),
-          gridData: FlGridData(show: true),
-          borderData: FlBorderData(show: true),
-          lineBarsData: [
-            LineChartBarData(
-              spots: _frequencies.asMap().entries.map((entry) {
-                return FlSpot(entry.key.toDouble(), entry.value);
-              }).toList(),
-              isCurved: true,
-              barWidth: 2,
-              belowBarData: BarAreaData(show: false),
-              dotData: FlDotData(show: false),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _player.dispose();
@@ -108,33 +63,39 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: const Text("Audio Decoder")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            if (filePath != null) ...[
-              Text("Selected File: ${filePath!.split('/').last}"),
-              const SizedBox(height: 10),
+        child: Center(
+          child: Column(
+            children: [
+              if (filePath != null) ...[
+                Text("Selected File: ${filePath!.split('/').last}"),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () => _player.play(),
+                  child: const Text("▶ Play"),
+                ),
+              ],
+              const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => _player.play(),
-                child: const Text("▶ Play"),
+                onPressed: _pickAudio,
+                child: const Text("Upload Audio"),
+              ),
+              ElevatedButton(
+                onPressed: _decodeAudio,
+                child: const Text("Decode Audio"),
+              ),
+              const SizedBox(height: 20),
+              buildGraph(_frequencies),
+              const SizedBox(height: 20),
+              Text(
+                "Decoded Message:",
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                message,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _pickAudio,
-              child: const Text("Upload Audio"),
-            ),
-            ElevatedButton(
-              onPressed: _decodeAudio,
-              child: const Text("Decode Audio"),
-            ),
-            const SizedBox(height: 20),
-            _buildGraph(),
-            const SizedBox(height: 20),
-            Text(
-              "Decoded Message: $message",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
+          ),
         ),
       ),
     );
