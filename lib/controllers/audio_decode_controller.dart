@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:fftea/fftea.dart';
 import 'package:wav/wav.dart';
 import '../../domain/usecases/decode_audio_message.dart';
@@ -13,7 +14,7 @@ class DecodeAudioMessageImpl implements DecodeAudioMessage {
   @override
   Future<DecodedMessage> call(String path) async {
     final wavFile = File(path).readAsBytesSync();
-    final wav = Wav.read(wavFile);
+    final wav = Wav.read(Uint8List.fromList(wavFile));
 
     List<double> samples = wav.channels[0].map((e) => e.toDouble()).toList();
 
@@ -38,8 +39,8 @@ class DecodeAudioMessageImpl implements DecodeAudioMessage {
       double maxMag = 0;
       int maxIndex = 0;
       for (int j = 0; j < spectrum.length ~/ 2; j++) {
-        final re = spectrum[j].x; // real
-        final im = spectrum[j].y; // imag
+        final re = spectrum[j].x; // FIXED
+        final im = spectrum[j].y; // FIXED
         double mag = sqrt(re * re + im * im);
         if (mag > maxMag) {
           maxMag = mag;
@@ -48,7 +49,7 @@ class DecodeAudioMessageImpl implements DecodeAudioMessage {
       }
 
       double freq = maxIndex * wav.samplesPerSecond / fftSize;
-      detectedFrequencies.add(freq); // save freq
+      detectedFrequencies.add(freq);
 
       int nearestFreq = freqToChar.keys.reduce(
             (a, b) => (freq - a).abs() < (freq - b).abs() ? a : b,

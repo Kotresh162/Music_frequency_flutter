@@ -33,13 +33,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (result != null && result.files.single.path != null) {
       filePath = result.files.single.path!;
-      await _player.setAudioSource(
-        AudioSource.file(filePath!),
-      );
 
-      setState(() {});
+      try {
+        await _player.setFilePath(filePath!);
+        setState(() {}); // update UI
+      } catch (e) {
+        debugPrint("Error loading audio: $e");
+      }
     }
   }
+
 
   Future<void> _decodeAudio() async {
     if (filePath == null) return;
