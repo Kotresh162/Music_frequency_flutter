@@ -44,7 +44,7 @@ To run the Project
   flutter run
 ```
 ## Arcitecture
-![Screenshot 2025-08-20 202124.png](..%2FPictures%2FScreenshots%2FScreenshot%202025-08-20%20202124.png)
+![arctitecture diagram.png](images%2Farctitecture%20diagram.png)
 
 
 ## Requirement
